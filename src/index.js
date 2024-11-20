@@ -92,7 +92,7 @@ async function getGif(icon) {
     if (icon == 'snow') {
         icon = 'snowfall';
     }
-    let gifResponse = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=mEWWF2X1VVXJfBLEzkxDlD5x0hsBtGca&s=${icon}`, {mode: 'cors'});
+    let gifResponse = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=eBxN7IaRvldhczffnOR98732m4CXxriX&s=${icon}`, {mode: 'cors'});
     let gifData = await gifResponse.json();
     return gifData.data.images.original.url;
 }
