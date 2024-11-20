@@ -1,4 +1,14 @@
 import "./style.css";
+import { format } from 'date-fns';
+
+let img = document.querySelector('img');
+img.style.display = "none";
+
+let ronImg = document.getElementById("cris");
+
+ronImg.style.display = "none";
+
+
 
 const days = ['Sunday, Monday, Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -15,7 +25,7 @@ async function extractInfo(data) {
     let temp = today.temp;
     let feelsLike = today.feelslike;
     let conditionsToday = today.description
-    let conditionsGeneral = data.conditions;
+    let conditionsGeneral = data.description;
     let min = today.tempmin;
     let max = today.tempmax;
     let icon = today.icon;
@@ -23,23 +33,72 @@ async function extractInfo(data) {
     return {location, today, temp, feelsLike, conditionsToday, conditionsGeneral, min, max, icon}
 }
 
+
+
 async function computeSearch() {
     let search = document.getElementById("search").value;
     let rawData = await getWeather(search);
     let filteredData = await extractInfo(rawData);
 
-    let dateData = new Date(`${filteredData.today.datetime}`);
-    let formattedDate = dateData.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: '2-digit'});
+    let date = new Date();
+    let polishedDate = format(date, 'EEEE, MMMM do yyyy');
 
-    document.getElementById("location").textContent = `${filteredData.location} on ${formattedTime}`;
-    document.getElementById("temp").textContent = `${filteredData.temp} °C`;
-    document.getElementById("date").textContent = filteredData.today.datetime;
-    document.getElementById("conditions").textContent = filteredData.desc;
+    let emoji;
+
+    if (filteredData.icon == 'rain') {
+        emoji = '🌧️';
+    }
+    else if (filteredData.icon == 'snow') {
+        emoji = '❄️';
+    }
+    else if (filteredData.icon == 'cloudy') {
+        emoji = '☁️';
+    }
+    else {
+        emoji = '☀️';
+    }
+
+    document.getElementById("date").textContent = `${polishedDate} in`;
+    document.getElementById("location").textContent = `🛰️ ${filteredData.location}`;
+    document.getElementById("temp").textContent = `${emoji} ${filteredData.temp} °C`;
+    document.getElementById("conditionsToday").textContent = filteredData.conditionsToday;
+    document.getElementById("conditionsGeneral").textContent = filteredData.conditionsGeneral;
+
+
+    
+    
+    img.src = await getGif(filteredData.icon)
+    img.style.display = "inline";
+    
+
+
+    if (search == 'madrid' || search == 'Madrid') {
+        ronImg.src = '../ronaldo.gif';
+        ronImg.style.display = "inline";
+    }
+    else if (search == 'barcelona' || search == 'Barcelona') {
+        ronImg.src = '../calma.gif';
+        ronImg.style.display = "inline";
+    }
+    else {
+        ronImg.src = "#";
+        ronImg.style.display = "none";
+    }
+    
     
 }
 
-document.getElementById("enter").addEventListener("click", computeSearch);
+async function getGif(icon) {
+    if (icon == 'snow') {
+        icon = 'snowfall';
+    }
+    let gifResponse = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=mEWWF2X1VVXJfBLEzkxDlD5x0hsBtGca&s=${icon}`, {mode: 'cors'});
+    let gifData = await gifResponse.json();
+    return gifData.data.images.original.url;
+}
 
+
+document.getElementById("enter").addEventListener("click", computeSearch);
 
 
 
