@@ -8,8 +8,6 @@ let ronImg = document.getElementById("cris");
 
 ronImg.style.display = "none";
 
-
-
 const days = ['Sunday, Monday, Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 async function getWeather(city) {
